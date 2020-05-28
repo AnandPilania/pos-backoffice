@@ -53,7 +53,7 @@ Table of Contents
 /* 00.Variables and Imports */
 @import url("https://fonts.googleapis.com/css?family=Nunito:300,400,400i,600,700");
 
-$main-menu-item-height: 110px;
+$main-menu-item-height: 50px;
 $main-menu-width: 120px;
 $main-menu-width-lg: 110px;
 $main-menu-width-md: 100px;
@@ -152,7 +152,7 @@ body {
 }
 
 .fixed-background {
-  background: url("/assets/img/balloon.jpg") no-repeat center center fixed;
+  background: url("/assets/img/auth-background.jpg") no-repeat center center fixed;
   background-size: cover;
   width: 100%;
   height: 100%;
@@ -313,12 +313,13 @@ hr {
 }
 
 .logo-single {
-  width: 110px;
-  height: 35px;
+  width: 90px;
+  height: 77px;
   background: url($logoPath) no-repeat;
   background-position: center center;
+  background-size: contain;
   display: inline-block;
-  margin-bottom: 60px;
+  margin-bottom: 18px;
 }
 
 .list-item-heading-container {
@@ -2004,10 +2005,11 @@ button {
         display: flex;
         flex-direction: column;
         justify-content: center;
-        align-items: center;
-        font-size: 13px;
+        align-items: flex-start;
+        font-size: 15px;
         font-style: normal;
-        font-weight: 400;
+        font-weight: 600;
+        padding-left: 10px;
         border-bottom: 1px solid $separator-color-light;
         color: $primary-color;
         transition: color $menu-collapse-time;
@@ -2031,12 +2033,10 @@ button {
       &.active:after {
         content: " ";
         background: $theme-color-1;
-        border-radius: 10px;
         position: absolute;
         width: 6px;
-        height: 90px;
-        top: 50%;
-        transform: translateY(-50%);
+        height: $main-menu-item-height;
+        top: 0;
         left: 0;
       }
 
@@ -2072,7 +2072,7 @@ button {
 
       ul li.active:after {
         width: 3px;
-        height: 60px;
+        height: 100%;
       }
     }
   }

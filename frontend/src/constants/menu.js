@@ -1,42 +1,53 @@
 const data = [
   {
-    id: "gogo",
-    icon: "iconsminds-air-balloon-1",
-    label: "menu.gogo",
-    to: "/app/gogo",
+    id: "my-site",
+    label: "menu.my-site",
+    to: "/my-site",
     subs: [
       {
-        icon: "simple-icon-paper-plane",
-        label: "menu.start",
-        to: "/app/gogo/start"
-      }     
-    ]
-  },
-  {
-    id: "secondmenu",
-    icon: "iconsminds-three-arrow-fork",
-    label: "menu.second-menu",
-    to: "/app/second-menu",
-    subs: [
+        label: "menu.dashboard",
+        to: "/my-site/dashboard"
+      },
       {
-        icon: "simple-icon-paper-plane",
-        label: "menu.second",
-        to: "/app/second-menu/second"
+        label: "menu.site-information",
+        to: "/my-site/information"
       }
     ]
   },
   {
-    id: "blankpage",
-    icon: "iconsminds-bucket",
-    label: "menu.blank-page",
-    to: "/app/blank-page"
+    id: "products",
+    label: "menu.products",
+    to: "/products",
+    subs: [
+      {
+        label: "menu.products",
+        to: "/products/products"
+      },
+      {
+        label: "menu.categories",
+        to: "/products/categories"
+      }
+    ]
   },
   {
-    id: "docs",
-    icon: "iconsminds-library",
-    label: "menu.docs",
-    to: "https://gogo-react-docs.coloredstrategies.com/",
-    newWindow:true
+    id: "people",
+    label: "menu.people",
+    to: "/people",
+    subs: [
+      {
+        label: "menu.users",
+        to: "/people/users"
+      },
+      {
+        label: "menu.customers",
+        to: "/people/customers"
+      }
+    ]
+  },
+  {
+    id: "reports",
+    label: "menu.reports",
+    to: "/reports"
   }
 ];
 export default data;

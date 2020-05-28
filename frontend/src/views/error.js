@@ -22,7 +22,7 @@ class Error extends Component {
               <Colxx xxs="12" md="10" className="mx-auto my-auto">
                 <Card className="auth-card">
                   <div className="position-relative image-side ">
-                    <p className="text-white h2">MAGIC IS IN THE DETAILS</p>
+                    <p className="text-white h2">WELCOME TO PICKITAPPS</p>
                     <p className="white mb-0">Yes, it is indeed!</p>
                   </div>
                   <div className="form-side">
@@ -37,7 +37,7 @@ class Error extends Component {
                     </p>
                     <p className="display-1 font-weight-bold mb-5">404</p>
                     <Button
-                      href="/app"
+                      href="/"
                       color="primary"
                       className="btn-shadow"
                       size="lg"

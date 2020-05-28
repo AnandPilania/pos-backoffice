@@ -14,8 +14,10 @@ export const localeOptions = [
 ];
 
 export const searchPath = "/app/pages/search";
-export const servicePath = "https://api.coloredstrategies.com";
-
+export const servicePath = "https://pickitapps.com/api";
+export const productImagePath = "https://pickitapps.com/media/images/products";
+export const mediaPath = "https://pickitapps.com/media";
+export const tokenPrefix = "pickitapps ";
 /* 
 Color Options:
 "light.purple", "light.blue", "light.green", "light.orange", "light.red", "dark.purple", "dark.blue", "dark.green", "dark.orange", "dark.red"
@@ -26,4 +28,4 @@ export const isDarkSwitchActive = true;
 export const defaultColor = "light.purple";
 export const defaultDirection = "ltr";
 export const themeRadiusStorageKey = "__theme_radius";
-export const isDemo = true;
+export const isDemo = false;
