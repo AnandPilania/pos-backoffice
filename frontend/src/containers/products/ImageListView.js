@@ -26,7 +26,7 @@ const ImageListView = ({ product, isSelect, collect, onCheckItem }) => {
           })}
         >
           <div className="position-relative">
-            <NavLink to={`?p=${product.id}`} className="w-40 w-sm-100">
+            <NavLink to={`products/edit/${product.id}`} className="w-40 w-sm-100">
               <CardImg top alt={product.name} src={productImagePath + "/thumbnail/" + product.picture} />
             </NavLink>
             <Badge
@@ -34,7 +34,7 @@ const ImageListView = ({ product, isSelect, collect, onCheckItem }) => {
               pill
               className="position-absolute badge-top-left"
             >
-              {product.show_flag === 1 ? 'PROCESSED' : 'ON HOLD'}
+              {product.show_flag === 1 ? 'ACTIVE' : 'INACTIVE'}
             </Badge>
           </div>
           <CardBody>

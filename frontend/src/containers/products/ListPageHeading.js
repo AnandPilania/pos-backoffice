@@ -56,13 +56,14 @@ class ListPageHeading extends Component {
       match,
       startIndex,
       endIndex,
-      selectedItemsLength,
+      selectedItems,
       itemsLength,
       onSearchKey,
       orderOptions,
       pageSizes,
       toggleModal,
-      heading
+      heading,
+      handleEditAction
     } = this.props;
 
     const { displayOptionsIsOpen, dropdownSplitOpen } = this.state;
@@ -87,23 +88,26 @@ class ListPageHeading extends Component {
                 isOpen={dropdownSplitOpen}
                 toggle={this.toggleSplit}>
                 <div className="btn btn-primary btn-lg pl-4 pr-0 check-button check-all">
+                  <div onClick={() => handleChangeSelectAll(true)}>
+                    <span className="mr-2">SELECT ALL</span>
                     <CustomInput
-                      className="custom-checkbox mb-0 d-inline-block"
-                      type="checkbox"
-                      id="checkAll"
-                      checked={selectedItemsLength >= itemsLength}
-                      onChange={() => handleChangeSelectAll(true)}
-                      label={
-                        <span
-                          className={`custom-control-label ${
-                            selectedItemsLength > 0 &&
-                            selectedItemsLength < itemsLength
-                              ? "indeterminate"
-                              : ""
-                          }`}
-                        />
-                      }
+                        className="custom-checkbox mb-0 d-inline-block"
+                        type="checkbox"
+                        id="checkAll"
+                        checked={selectedItems.length >= itemsLength}
+                        onChange={() => handleChangeSelectAll(true)}
+                        label={
+                          <span
+                              className={`custom-control-label ${
+                                  selectedItems.length > 0 &&
+                                  selectedItems.length < itemsLength
+                                      ? "indeterminate"
+                                      : ""
+                              }`}
+                          />
+                        }
                     />
+                  </div>
                 </div>
                 <DropdownToggle
                   caret
@@ -111,8 +115,10 @@ class ListPageHeading extends Component {
                   className="dropdown-toggle-split btn-lg"/>
                 <DropdownMenu right>
                   {
-                    selectedItemsLength <= 1 &&
-                      <DropdownItem>
+                    selectedItems.length <= 1 &&
+                      <DropdownItem
+                          onClick={handleEditAction}
+                      >
                         <IntlMessages id="pages.edit" />
                       </DropdownItem>
                   }

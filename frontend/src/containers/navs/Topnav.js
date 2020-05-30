@@ -7,7 +7,7 @@ import {
     DropdownMenu,
 } from "reactstrap";
 
-import {NavLink} from "react-router-dom";
+import {NavLink, Link} from "react-router-dom";
 import {connect} from "react-redux";
 
 import {
@@ -133,20 +133,22 @@ class TopNav extends Component {
                     <div className="user d-inline-block">
                         <UncontrolledDropdown className="dropdown-menu-right">
                             <DropdownToggle className="p-0" color="empty">
-                                <span className="name mr-1">{this.props.loginUser ? this.props.loginUser.first_name + ' ' + this.props.loginUser.last_name : ''}</span>
+                                <span
+                                    className="name mr-1">{this.props.loginUser ? this.props.loginUser.firstName + ' ' + this.props.loginUser.lastName : ''}</span>
                                 <span>
                   <img alt="Profile" src={
-                      this.props.company_logo !== undefined
-                          ? `${mediaPath}/company_logos/${this.props.company_logo}`
+                      this.props.loginUser.companyLogo !== undefined
+                          ? `${mediaPath}/company_logos/${this.props.loginUser.companyLogo}`
                           : '/assets/img/profile-pic-l.jpg'
-                          }/>
+                  }/>
                 </span>
                             </DropdownToggle>
                             <DropdownMenu className="mt-3" right>
-                                <DropdownItem>Profile</DropdownItem>
-                                <DropdownItem>Account</DropdownItem>
+                                <Link to="/my-site/information">
+                                    <DropdownItem>Profile</DropdownItem>
+                                </Link>
                                 <DropdownItem divider/>
-                                <DropdownItem onClick={() => this.handleLogout()}>
+                                <DropdownItem onClick={this.handleLogout}>
                                     Sign out
                                 </DropdownItem>
                             </DropdownMenu>

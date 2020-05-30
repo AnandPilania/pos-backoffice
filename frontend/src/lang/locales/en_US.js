@@ -31,8 +31,10 @@ module.exports = {
   "menu.app": "Home",
   "menu.dashboard": "Dashboard",
 
-  "menu.my-site": "My site",
+  "menu.my-account": "My account",
+  "menu.product-edit": "Product Edit",
   "menu.site-information": "Site Information",
+  "menu.profile": "Profile",
   "menu.products": "Products",
   "menu.categories": "Categories",
   "menu.start": "Start",
@@ -40,14 +42,13 @@ module.exports = {
   "menu.users": "Users",
   "menu.customers": "Customers",
   "menu.reports": "Reports",
-  "menu.second": "Second",
+  "menu.menu-app-settings": "Menu App Settings",
   "menu.ui": "UI",
   "menu.charts": "Charts",
   "menu.chat": "Chat",
   "menu.survey": "Survey",
   "menu.todo": "Todo",
   "menu.search" :"Search",
-  "menu.docs": "Docs",
   "menu.blank-page": "Blank Page",
 
   /* 05.Pages */
@@ -112,6 +113,15 @@ module.exports = {
   "pages.prices.featurecomparison" : "Feature Comparison",
   "pages.prices.pricecomparison" : "Price Comparison",
   "pages.category-name": "Category Name",
-  "pages.edit": "Edit"
+  "pages.edit": "Edit",
+  "pages.save": "Save",
+  "pages.upload-logo": "Upload Logo",
 
+  "page.menu-app-settings.company-logo": "Company Logo",
+  "page.menu-app-settings.template": "Template",
+  "page.menu-app-settings.colors": "Colors",
+  "page.menu-app-settings.banner-background-color" : "Banner Background Color",
+  "page.menu-app-settings.font-color" : "Font Color",
+  "page.menu-app-settings.category-list-background-color" : "Category List Background Color",
+  "page.menu-app-settings.product-list-background-color" : "Product List Background Color",
 };

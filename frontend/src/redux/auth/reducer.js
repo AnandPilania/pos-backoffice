@@ -11,7 +11,8 @@ import {
     FORGOT_PASSWORD_ERROR,
     RESET_PASSWORD,
     RESET_PASSWORD_SUCCESS,
-    RESET_PASSWORD_ERROR, LOAD_USER_SUCCESS
+    RESET_PASSWORD_ERROR,
+    LOAD_USER_SUCCESS
 } from '../actions';
 
 const INIT_STATE = {
@@ -53,7 +54,10 @@ export default (state = INIT_STATE, action) => {
         case REGISTER_USER_ERROR:
             return { ...state, loading: false, token: '', error: action.payload.message };
         case LOGOUT_USER:
-            return { ...state, token: null, error: '' };
+            localStorage.removeItem('_fs_utk');
+            localStorage.removeItem('user_info');
+            localStorage.removeItem('menu_app_config');
+            return { ...state, token: null, error: '', user: "", loading: false };
         default: return { ...state };
     }
 }

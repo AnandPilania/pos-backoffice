@@ -126,7 +126,7 @@ class AddNewModal extends Component {
                         type="radio"
                         id="exCustomRadio"
                         name="customRadio"
-                        label="ON HOLD"
+                        label="INACTIVE"
                         value="0"
                         onChange={this.onStatusChange}
                     />
@@ -134,7 +134,7 @@ class AddNewModal extends Component {
                         type="radio"
                         id="exCustomRadio2"
                         name="customRadio"
-                        label="PROCESSED"
+                        label="ACTIVE"
                         value="1"
                         onChange={this.onStatusChange}
                     />

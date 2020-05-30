@@ -3,7 +3,6 @@ import { Route, withRouter, Switch, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import AppLayout from '../../layout/AppLayout';
-import { loadUser } from "../../redux/auth/actions";
 
 const Products = React.lazy(() =>
   import(/* webpackChunkName: "viwes-gogo" */ './products')
@@ -16,10 +15,6 @@ const BlankPage = React.lazy(() =>
 );
 
 class App extends Component {
-
-  componentDidMount() {
-    //this.props.loadUser();
-  }
 
   render() {
     const { match } = this.props;
@@ -58,8 +53,6 @@ const mapStateToProps = ({ menu }) => {
 export default withRouter(
   connect(
     mapStateToProps,
-    {
-      loadUser
-    }
+    {}
   )(App)
 );

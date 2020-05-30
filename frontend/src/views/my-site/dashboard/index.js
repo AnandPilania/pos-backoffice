@@ -3,8 +3,9 @@ import {Row} from "reactstrap";
 import {Colxx, Separator} from "../../../components/common/CustomBootstrap";
 import Breadcrumb from "../../../containers/navs/Breadcrumb";
 import IntlMessages from "../../../helpers/IntlMessages";
+import {connect} from "react-redux";
 
-export default class Dashboard extends Component {
+class Dashboard extends Component {
     render() {
         return (
             <Fragment>
@@ -16,10 +17,20 @@ export default class Dashboard extends Component {
                 </Row>
                 <Row>
                     <Colxx xxs="12" className="mb-4">
-                        <p><IntlMessages id="menu.dashboard"/></p>
+                        <h3>Welcome {`${this.props.user.firstName} ${this.props.user.lastName}`}</h3>
                     </Colxx>
                 </Row>
             </Fragment>
         )
     }
 }
+
+const mapStateToProps = ({ authUser }) => {
+    const { user } = authUser;
+    return { user };
+};
+
+export default connect(
+    mapStateToProps,
+    {}
+)(Dashboard);

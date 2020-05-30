@@ -17,7 +17,7 @@ const DataListView = ({ product, isSelect, collect, onCheckItem }) => {
         >
           <div className="pl-2 d-flex flex-grow-1 min-width-zero">
             <div className="card-body align-self-center d-flex flex-column flex-lg-row justify-content-between min-width-zero align-items-lg-center">
-              <NavLink to={`?p=${product.id}`} className="w-40 w-sm-100">
+              <NavLink to={`products/edit/${product.id}`} className="w-40 w-sm-100">
                 <p className="list-item-heading mb-1 truncate">
                   {product.name}
                 </p>
@@ -26,11 +26,11 @@ const DataListView = ({ product, isSelect, collect, onCheckItem }) => {
                 {product.category.name}
               </p>
               <p className="mb-1 text-muted text-small w-15 w-sm-100">
-                {product.price + ' ' + product.currency.name}
+                {product.currency !== null ? (product.price + ' ' + product.currency.name) : ''}
               </p>
               <div className="w-15 w-sm-100">
                 <Badge color={product.show_flag === 1 ? 'primary' : 'secondary'} pill>
-                  {product.show_flag === 1 ? 'PROCESSED' : 'ON HOLD'}
+                  {product.show_flag === 1 ? 'ACTIVE' : 'INACTIVE'}
                 </Badge>
               </div>
             </div>

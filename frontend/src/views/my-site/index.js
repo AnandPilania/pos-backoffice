@@ -8,7 +8,10 @@ const Dashboard = React.lazy(() =>
   import(/* webpackChunkName: "viwes-gogo" */ './dashboard')
 );
 const SiteInformation = React.lazy(() =>
-  import(/* webpackChunkName: "viwes-second-menu" */ './site-info')
+    import(/* webpackChunkName: "viwes-second-menu" */ './site-info')
+);
+const MenuAppSettings = React.lazy(() =>
+    import(/* webpackChunkName: "viwes-second-menu" */ './menu-app')
 );
 
 class App extends Component {
@@ -29,6 +32,10 @@ class App extends Component {
               <Route
                 path={`${match.url}/information`}
                 render={props => <SiteInformation {...props} />}
+              />
+              <Route
+                  path={`${match.url}/menu-app-settings`}
+                  render={props => <MenuAppSettings {...props} />}
               />
               <Redirect to="/error" />
             </Switch>

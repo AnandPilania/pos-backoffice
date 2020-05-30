@@ -1,8 +1,8 @@
-import React, { Component, Fragment } from "react";
-import { Row } from "reactstrap";
+import React, {Component, Fragment} from "react";
+import {Row} from "reactstrap";
 import axios from "axios";
 
-import { servicePath, tokenPrefix } from "../../../constants/defaultValues";
+import {servicePath, tokenPrefix} from "../../../constants/defaultValues";
 
 import Pagination from "../../../containers/products/Pagination";
 import ContextMenuContainer from "../../../containers/products/ContextMenuContainer";
@@ -14,8 +14,9 @@ import DataListView from "../../../containers/products/DataListView";
 import {connect} from "react-redux";
 
 function collect(props) {
-    return { data: props.data };
+    return {data: props.data};
 }
+
 const apiUrl = servicePath + "/products/paging";
 
 class ProductListPages extends Component {
@@ -27,16 +28,16 @@ class ProductListPages extends Component {
 
             selectedPageSize: 8,
             orderOptions: [
-                { column: "", label: "Default" },
-                { column: "name", label: "Product Name" },
-                { column: "category", label: "Category" },
-                { column: "status", label: "Status" }
+                {column: "", label: "Default"},
+                {column: "name", label: "Product Name"},
+                {column: "category", label: "Category"},
+                {column: "status", label: "Status"}
             ],
             pageSizes: [8, 12, 24],
 
             categories: [],
 
-            selectedOrderOption: { column: "", label: "Default" },
+            selectedOrderOption: {column: "", label: "Default"},
             dropdownSplitOpen: false,
             modalOpen: false,
             currentPage: 1,
@@ -170,6 +171,7 @@ class ProductListPages extends Component {
         }
         return -1;
     }
+
     handleChangeSelectAll = isToggle => {
         if (this.state.selectedItems.length >= this.state.items.length) {
             if (isToggle) {
@@ -194,6 +196,11 @@ class ProductListPages extends Component {
             selectedOrderOption,
             search
         } = this.state;
+
+        this.setState({
+            isLoading: false
+        });
+
         axios
             .get(
                 `${apiUrl}?pageSize=${selectedPageSize}&currentPage=${currentPage}&orderBy=${
@@ -228,7 +235,6 @@ class ProductListPages extends Component {
                 }
             )
             .then(res => {
-                console.log(res);
                 return res.data['data'];
             })
             .then(data => {
@@ -244,7 +250,15 @@ class ProductListPages extends Component {
             this.state.selectedItems
         );
         console.log("onContextMenuClick - action : ", data.action);
+        if (data.action === 'edit') {
+            this.props.history.push(this.props.match.url + '/edit/' + this.state.selectedItems[0]);
+        }
     };
+
+    handleEditAction = () => {
+        if (this.state.selectedItems.length === 1)
+            this.props.history.push(this.props.match.url + '/edit/' + this.state.selectedItems[0]);
+    }
 
     onContextMenu = (e, data) => {
         const clickedProductId = data.data;
@@ -271,15 +285,11 @@ class ProductListPages extends Component {
             modalOpen,
             categories
         } = this.state;
-        const { match } = this.props;
+        const {match} = this.props;
         const startIndex = (currentPage - 1) * selectedPageSize;
         const endIndex = currentPage * selectedPageSize;
 
-        console.log(categories);
-
-        return !this.state.isLoading ? (
-            <div className="loading" />
-        ) : (
+        return (
             <Fragment>
                 <div className="disable-text-selection">
                     <ListPageHeading
@@ -296,72 +306,80 @@ class ProductListPages extends Component {
                         match={match}
                         startIndex={startIndex}
                         endIndex={endIndex}
-                        selectedItemsLength={selectedItems ? selectedItems.length : 0}
+                        selectedItems={selectedItems}
                         itemsLength={items ? items.length : 0}
                         onSearchKey={this.onSearchKey}
                         orderOptions={orderOptions}
                         pageSizes={pageSizes}
                         toggleModal={this.toggleModal}
+                        handleEditAction={this.handleEditAction}
                     />
                     <AddNewModal
-                        modalOpen={modalOpen}
                         toggleModal={this.toggleModal}
+                        modalOpen={modalOpen}
                         categories={categories}
+                        history={this.props.history}
+                        match={this.props.match}
                     />
-                    <Row>
-                        {this.state.items.map(product => {
-                            if (this.state.displayMode === "imagelist") {
-                                return (
-                                    <ImageListView
-                                        key={product.id}
-                                        product={product}
-                                        isSelect={this.state.selectedItems.includes(product.id)}
-                                        collect={collect}
-                                        onCheckItem={this.onCheckItem}
-                                    />
-                                );
-                            } else if (this.state.displayMode === "thumblist") {
-                                return (
-                                    <ThumbListView
-                                        key={product.id}
-                                        product={product}
-                                        isSelect={this.state.selectedItems.includes(product.id)}
-                                        collect={collect}
-                                        onCheckItem={this.onCheckItem}
-                                    />
-                                );
-                            } else {
-                                return (
-                                    <DataListView
-                                        key={product.id}
-                                        product={product}
-                                        isSelect={this.state.selectedItems.includes(product.id)}
-                                        onCheckItem={this.onCheckItem}
-                                        collect={collect}
-                                    />
-                                );
-                            }
-                        })}{" "}
-                        <Pagination
-                            currentPage={this.state.currentPage}
-                            totalPage={this.state.totalPage}
-                            onChangePage={i => this.onChangePage(i)}
-                        />
-                        <ContextMenuContainer
-                            onContextMenuClick={this.onContextMenuClick}
-                            onContextMenu={this.onContextMenu}
-                            selectedItemsLength={selectedItems ? selectedItems.length : 0}
-                        />
-                    </Row>
+                    {
+                        !this.state.isLoading ? (
+                                <div className="loading"/>
+                            ) :
+                            <Row>
+                                {this.state.items.map(product => {
+                                    if (this.state.displayMode === "imagelist") {
+                                        return (
+                                            <ImageListView
+                                                key={product.id}
+                                                product={product}
+                                                isSelect={this.state.selectedItems.includes(product.id)}
+                                                collect={collect}
+                                                onCheckItem={this.onCheckItem}
+                                            />
+                                        );
+                                    } else if (this.state.displayMode === "thumblist") {
+                                        return (
+                                            <ThumbListView
+                                                key={product.id}
+                                                product={product}
+                                                isSelect={this.state.selectedItems.includes(product.id)}
+                                                collect={collect}
+                                                onCheckItem={this.onCheckItem}
+                                            />
+                                        );
+                                    } else {
+                                        return (
+                                            <DataListView
+                                                key={product.id}
+                                                product={product}
+                                                isSelect={this.state.selectedItems.includes(product.id)}
+                                                onCheckItem={this.onCheckItem}
+                                                collect={collect}
+                                            />
+                                        );
+                                    }
+                                })}{" "}
+                                <Pagination
+                                    currentPage={this.state.currentPage}
+                                    totalPage={this.state.totalPage}
+                                    onChangePage={i => this.onChangePage(i)}
+                                />
+                                <ContextMenuContainer
+                                    onContextMenuClick={this.onContextMenuClick}
+                                    onContextMenu={this.onContextMenu}
+                                    selectedItemsLength={selectedItems ? selectedItems.length : 0}
+                                />
+                            </Row>
+                    }
                 </div>
             </Fragment>
         );
     }
 }
 
-const mapStateToProps = ({ authUser }) => {
-    const { token: apiToken } = authUser;
-    return { apiToken };
+const mapStateToProps = ({authUser}) => {
+    const {token: apiToken} = authUser;
+    return {apiToken};
 };
 
 export default connect(

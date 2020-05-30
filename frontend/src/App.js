@@ -93,17 +93,20 @@ class App extends Component {
                                         path="/auth"
                                         render={props => <ViewAuth {...props} />}
                                     />
-                                    <Route
+                                    <AuthRoute
                                         path="/my-site"
-                                        render={props => <ViewMySite {...props} />}
+                                        authUser={loginUser}
+                                        component={ViewMySite}
                                     />
-                                    <Route
+                                    <AuthRoute
                                         path="/people"
-                                        render={props => <ViewPeople {...props} />}
+                                        authUser={loginUser}
+                                        component={ViewPeople}
                                     />
-                                    <Route
+                                    <AuthRoute
                                         path="/reports"
-                                        render={props => <ViewReports {...props} />}
+                                        authUser={loginUser}
+                                        component={ViewReports}
                                     />
                                     <Route
                                         path="/error"

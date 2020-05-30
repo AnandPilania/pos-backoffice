@@ -24,7 +24,7 @@ const DataListView = ({ product, isSelect, collect, onCheckItem }) => {
               </NavLink>
               <div className="w-15 w-sm-100">
                 <Badge color={product.show_flag === 1 ? 'primary' : 'secondary'} pill>
-                  {product.show_flag === 1 ? 'PROCESSED' : 'ON HOLD'}
+                  {product.show_flag === 1 ? 'ACTIVE' : 'INACTIVE'}
                 </Badge>
               </div>
             </div>

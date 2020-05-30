@@ -16,19 +16,19 @@ import {
     FORGOT_PASSWORD_ERROR,
     RESET_PASSWORD,
     RESET_PASSWORD_SUCCESS,
-    RESET_PASSWORD_ERROR
+    RESET_PASSWORD_ERROR,
+    UPDATE_MENU_APP_SETTINGS_SUCCESS
 } from '../actions';
 
-export const loadUser = (user, history) => (dispatch, getState) => {
+export const loadUser = () => (dispatch, getState) => {
 
     dispatch({
-        type: LOGIN_USER,
-        payload: { user, history }
+        type: LOGIN_USER
     });
 
-    axios.get(servicePath + "/auth/user", {
+    axios.get(servicePath + "/user/check-auth", {
         headers: {
-            'X-API-TOKEN': tokenPrefix + getState().token
+            'X-API-TOKEN': tokenPrefix + getState().authUser.token
         }
     }).then(response => {
 
@@ -39,37 +39,50 @@ export const loadUser = (user, history) => (dispatch, getState) => {
                 payload:  data['user']
             });
         } else {
-            logoutUser();
+            dispatch({
+                type: LOGOUT_USER
+            });
         }
 
     }).catch(error => {
-        logoutUser();
+        dispatch({
+            type: LOGOUT_USER
+        });
     });
 };
 
 export const loginUser = (user, history) => dispatch => {
 
     dispatch({
-        type: LOGIN_USER,
-        payload: { user, history }
+        type: LOGIN_USER
     });
 
-    axios.post(servicePath + "/auth/login", {
+    axios.post(servicePath + "/user/login", {
         email: user.email,
         password: user.password
     }).then(response => {
 
         if (response.status === 200 && response.data['message'] === "") {
+
             const data = response.data['data'];
-            localStorage.setItem('_fs_utk', data['api_token']);
-            localStorage.setItem('user_info', JSON.stringify(data['user']));
+
+            localStorage.setItem('_fs_utk', data['apiToken']);
+            localStorage.setItem('user_info', JSON.stringify(data['userInfo']));
+            localStorage.setItem('menu_app_config', JSON.stringify(data['menuAppConfig']));
+
             dispatch({
                 type: LOGIN_USER_SUCCESS,
                 payload: {
-                    token: data['api_token'],
-                    user: data['user']
+                    token: data['apiToken'],
+                    user: data['userInfo']
                 }
             });
+
+            dispatch({
+                type: UPDATE_MENU_APP_SETTINGS_SUCCESS,
+                payload: data['menuAppConfig']
+            });
+
             history.push('/');
         } else {
             const errorCode = response.data['message'];
@@ -127,10 +140,8 @@ export const registerUserError = (message) => ({
     payload: {message}
 })
 
-export const logoutUser = () => displatch => {
-    localStorage.removeItem('_fs_utk');
-    localStorage.removeItem('user_info');
-    displatch({
+export const logoutUser = () => dispatch => {
+    dispatch({
         type: LOGOUT_USER
     });
 };

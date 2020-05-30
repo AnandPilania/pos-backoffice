@@ -7,7 +7,7 @@ import {
 import { FormGroup, Label, CustomInput } from 'reactstrap';
 class ColorSwitcher extends Component {
   constructor(props) {
-    super();
+    super(props);
 
     this.state = {
       isOpen: false,

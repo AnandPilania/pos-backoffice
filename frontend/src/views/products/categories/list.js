@@ -226,6 +226,10 @@ class CategoryListPages extends Component {
         console.log("onContextMenuClick - action : ", data.action);
     };
 
+    handleEditAction = () => {
+
+    }
+
     onContextMenu = (e, data) => {
         const clickedProductId = data.data;
         if (!this.state.selectedItems.includes(clickedProductId)) {
@@ -268,12 +272,13 @@ class CategoryListPages extends Component {
                         match={match}
                         startIndex={startIndex}
                         endIndex={endIndex}
-                        selectedItemsLength={selectedItems ? selectedItems.length : 0}
+                        selectedItems={selectedItems}
                         itemsLength={items ? items.length : 0}
                         onSearchKey={this.onSearchKey}
                         orderOptions={orderOptions}
                         pageSizes={pageSizes}
                         toggleModal={this.toggleModal}
+                        handleEditAction={this.handleEditAction}
                     />
                     <AddNewModal
                         modalOpen={modalOpen}

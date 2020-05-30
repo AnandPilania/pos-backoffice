@@ -1,7 +1,7 @@
 const data = [
   {
-    id: "my-site",
-    label: "menu.my-site",
+    id: "my-account",
+    label: "menu.my-account",
     to: "/my-site",
     subs: [
       {
@@ -9,8 +9,12 @@ const data = [
         to: "/my-site/dashboard"
       },
       {
-        label: "menu.site-information",
+        label: "menu.profile",
         to: "/my-site/information"
+      },
+      {
+        label: "menu.menu-app-settings",
+        to: "/my-site/menu-app-settings"
       }
     ]
   },
