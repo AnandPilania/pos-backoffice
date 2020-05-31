@@ -1,4 +1,4 @@
-import React, {Component, useState} from "react";
+import React, {Component} from "react";
 import {
     Card,
     CustomInput,
@@ -6,13 +6,16 @@ import {
     ButtonDropdown,
     DropdownToggle,
     DropdownMenu,
-    DropdownItem
+    DropdownItem, ModalHeader, ModalBody, ModalFooter, Button, Modal
 } from "reactstrap";
 import {NavLink} from "react-router-dom";
 import classnames from "classnames";
 import {ContextMenuTrigger} from "react-contextmenu";
 import {Colxx} from "../../components/common/CustomBootstrap";
 import {productImagePath} from "../../constants/defaultValues";
+import {connect} from "react-redux";
+import {toggleProductState} from "../../redux/products/actions";
+import {injectIntl} from "react-intl";
 
 class ThumbListView extends Component {
 
@@ -20,7 +23,7 @@ class ThumbListView extends Component {
         super(props);
         this.state = {
             actionButtonOpen: false,
-            active: this.props.product.show_flag
+            confirmModalOpen: false
         };
     }
 
@@ -31,16 +34,29 @@ class ThumbListView extends Component {
         });
     }
     handleState = () => {
+        this.props.toggleProductState(this.props.product.id);
+    }
+    toggleDeleteConfirmModal = () => {
         this.setState({
-            active: 1 - this.state.active
-        });
+            confirmModalOpen: !this.state.confirmModalOpen
+        })
     }
 
     render() {
-        const {product, isSelect, collect, onCheckItem} = this.props;
-        const {actionButtonOpen, active} = this.state;
+        const {product, isSelect, collect, onCheckItem, toggleItems, onDelete, intl} = this.props;
+        const {actionButtonOpen, confirmModalOpen} = this.state;
         return (
             <Colxx xxs="12" key={product.id} className="mb-3">
+                <Modal isOpen={confirmModalOpen} toggle={this.toggleDeleteConfirmModal}>
+                    <ModalHeader>Delete Product</ModalHeader>
+                    <ModalBody>
+                        Are you sure you want to delete selected product?
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button onClick={() => onDelete(product.id)} size="lg" color="primary">Yes</Button>
+                        <Button onClick={this.toggleDeleteConfirmModal} outline size="lg" color="secondary">Cancel</Button>
+                    </ModalFooter>
+                </Modal>
                 <ContextMenuTrigger id="menu_id" data={product.id} collect={collect}>
                     <Card
                         onClick={event => onCheckItem(event, product.id)}
@@ -70,8 +86,19 @@ class ThumbListView extends Component {
                                     {product.currency !== null ? (product.price + ' ' + product.currency.name) : ''}
                                 </p>
                                 <div className="w-15 w-sm-100">
-                                    <Badge color={active === 1 ? 'primary' : 'secondary'} pill>
-                                        {active === 1 ? 'ACTIVE' : 'INACTIVE'}
+                                    <Badge color={
+                                        toggleItems.indexOf(product.id) !== -1 ? 'info' : (product.show_flag === 1 ? 'primary' : 'danger')}
+                                           pill>
+                                        {toggleItems.indexOf(product.id) !== -1 ?
+                                            <div className="show-spinner badge-multiple-state badge">
+                                                <span className="spinner d-inline-block">
+                                                  <span className="bounce1"/>
+                                                  <span className="bounce2"/>
+                                                  <span className="bounce3"/>
+                                                </span>
+                                            </div> : (product.show_flag === 1 ?
+                                                intl.messages['pages.active-c'] :
+                                                intl.messages['pages.inactive-c'])}
                                     </Badge>
                                 </div>
                             </div>
@@ -88,9 +115,13 @@ class ThumbListView extends Component {
                                             <DropdownItem>Edit</DropdownItem>
                                         </NavLink>
                                         <DropdownItem onClick={this.handleState}>
-                                            {active === 1 ? 'Inactivate' : 'Activate'}
+                                            {product.show_flag === 1 ?
+                                                intl.messages['pages.inactivate']:
+                                                intl.messages['pages.activate']}
                                         </DropdownItem>
-                                        <DropdownItem>Delete</DropdownItem>
+                                        <DropdownItem onClick={this.toggleDeleteConfirmModal}>
+                                            Delete
+                                        </DropdownItem>
                                     </DropdownMenu>
                                 </ButtonDropdown>
                             </div>
@@ -115,4 +146,15 @@ class ThumbListView extends Component {
 }
 
 /* React.memo detail : https://reactjs.org/docs/react-api.html#reactpurecomponent  */
-export default React.memo(ThumbListView);
+const mapStateToProps = ({products}) => {
+    const {toggleItems} = products;
+    return {toggleItems};
+};
+export default injectIntl(
+    connect(
+        mapStateToProps,
+        {
+            toggleProductState
+        }
+    )(ThumbListView)
+);

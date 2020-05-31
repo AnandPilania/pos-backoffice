@@ -4,16 +4,15 @@ import IntlMessages from "../../../helpers/IntlMessages";
 import {Colxx, Separator} from "../../../components/common/CustomBootstrap";
 import Breadcrumb from "../../../containers/navs/Breadcrumb";
 import axios from "axios";
-import {productImagePath, servicePath, tokenPrefix} from "../../../constants/defaultValues";
+import {servicePath, tokenPrefix} from "../../../constants/defaultValues";
 import {NotificationManager} from "../../../components/common/react-notifications";
 import errorMessage from "../../../constants/errorMessages";
 import {connect} from "react-redux";
-import ImageUploader from "react-images-upload";
 import CustomSelectInput from "../../../components/common/CustomSelectInput";
 import Select from "react-select";
 import {injectIntl} from "react-intl";
 
-class ProductEdit extends Component {
+class CategoryEdit extends Component {
 
     constructor(props) {
         super(props);
@@ -26,9 +25,9 @@ class ProductEdit extends Component {
     componentDidMount() {
         this.setState({loading: true});
         axios
-            .get(servicePath + "/products/get", {
+            .get(servicePath + "/categories/get", {
                 params: {
-                    productId: this.props.match.params.productId,
+                    categoryId: this.props.match.params.categoryId,
                 },
                 headers: {
                     'X-API-TOKEN': tokenPrefix + this.props.apiToken
@@ -37,28 +36,19 @@ class ProductEdit extends Component {
             .then(response => response['data'])
             .then(data => {
                 if (data['message'] === "") {
-                    const category = data['data']['categoryList'].filter(item => item.value === data['data']['product'].category_id)
-                    const currency = data['data']['currencyList'].filter(item => item.value === data['data']['product'].currency_id)
                     this.setState({
                         loading: false,
-                        name: data['data']['product']['name'],
-                        price: data['data']['product']['price'],
-                        description: data['data']['product']['description'],
-                        image: data['data']['product']['picture'],
-                        categoryList: data['data']['categoryList'],
-                        currencyList: data['data']['currencyList'],
-                        state: data['data']['product']['show_flag'] === 1 ?
+                        name: data['data']['category']['name'],
+                        state: data['data']['category']['show_flag'] === 1 ?
                             {'label': this.props.intl.messages['pages.active'], 'value': 1} :
-                            {'label': this.props.intl.messages['pages.inactive'], 'value': 0},
-                        category: category.length > 0 ? category[0] : {},
-                        currency: currency.length > 0 ? currency[0] : {},
+                            {'label': this.props.intl.messages['pages.inactive'], 'value': 0}
                     });
                 } else {
-                    this.props.history.push('/products/products');
+                    this.props.history.push('/products/categories');
                 }
             })
             .catch(error => {
-                this.props.history.push('/products/products');
+                this.props.history.push('/products/categories');
             });
     }
 
@@ -68,63 +58,35 @@ class ProductEdit extends Component {
         });
     }
 
-    onDropImage = image => {
-        this.setState({
-            newImage: image
-        });
-    }
-
-    handleCategoryChange = category => {
-        this.setState({category});
-    }
-
     handleStateChange = state => {
         this.setState({state});
     }
 
-    handleCurrencyChange = currency => {
-        this.setState({currency});
-    }
-
     onSubmit = () => {
-        const {loading, uploading, name, price, description, category, currency, state} = this.state;
+        const {loading, uploading, name, state} = this.state;
 
         if (!loading && !uploading) {
 
             const data = new FormData();
-            data.append('id', this.props.match.params.productId);
+            data.append('id', this.props.match.params.categoryId);
             data.append('name', name);
-            data.append('description', description);
-            data.append('category', category.value);
-            data.append('price', price);
             data.append('state', state.value);
-            data.append('currency', currency.value);
-
-            if (this.state.newImage != null && this.state.newImage.length > 0) {
-                data.append('image', this.state.newImage[0]);
-            }
 
             this.setState({uploading: true});
 
             axios
-                .post(servicePath + "/products/update", data, {
+                .post(servicePath + "/categories/update", data, {
                     headers: {
                         'X-API-TOKEN': tokenPrefix + this.props.apiToken
                     }
                 })
                 .then(response => {
                     this.setState({
-                        uploading: false,
-                        newImage: []
+                        uploading: false
                     });
                     if (response.status === 200 && response.data['message'] === "") {
-                        if (response.data['data'].length > 0) {
-                            this.setState({
-                                image: response.data['data'][0]
-                            });
-                        }
                         NotificationManager.success(
-                            "Product Successfully Updated",
+                            "Category Successfully Updated",
                             "Success",
                             3000,
                             null,
@@ -165,20 +127,13 @@ class ProductEdit extends Component {
             loading,
             uploading,
             name,
-            category,
-            price,
-            description,
             state,
-            image,
-            currency,
-            categoryList,
-            currencyList
         } = this.state;
         return (
             <Fragment>
                 <Row>
                     <Colxx xxs="12">
-                        <Breadcrumb heading="menu.product-edit" match={this.props.match}/>
+                        <Breadcrumb heading="menu.category-edit" match={this.props.match}/>
                         <Separator className="mb-5"/>
                     </Colxx>
                 </Row>
@@ -190,45 +145,11 @@ class ProductEdit extends Component {
                                 <Card className="mb-4">
                                     <CardBody>
                                         <Row>
-                                            <Colxx xxs="12" xl="8" className="col-left">
+                                            <Colxx xxs="12" xl="6" className="col-left">
                                                 <FormGroup>
-                                                    <Label for="name">Product Name</Label>
+                                                    <Label for="name">Category Name</Label>
                                                     <Input type="text" id="name" name="name" value={name}
                                                            onChange={this.onChange}/>
-                                                </FormGroup>
-                                                <FormGroup>
-                                                    <Label for="category">Category</Label>
-                                                    <Select
-                                                        id="category"
-                                                        components={{Input: CustomSelectInput}}
-                                                        className="react-select"
-                                                        classNamePrefix="react-select"
-                                                        onChange={this.handleCategoryChange}
-                                                        value={category}
-                                                        options={categoryList}
-                                                    />
-                                                </FormGroup>
-                                                <FormGroup>
-                                                    <Label for="price">Price</Label>
-                                                    <Input type="text" id="price" value={price ?? ''} name="price"
-                                                           onChange={this.onChange}/>
-                                                </FormGroup>
-                                                <FormGroup>
-                                                    <Label for="currency">Currency</Label>
-                                                    <Select
-                                                        id="currency"
-                                                        components={{Input: CustomSelectInput}}
-                                                        className="react-select"
-                                                        classNamePrefix="react-select"
-                                                        onChange={this.handleCurrencyChange}
-                                                        value={currency}
-                                                        options={currencyList}
-                                                    />
-                                                </FormGroup>
-                                                <FormGroup>
-                                                    <Label for="description">Description</Label>
-                                                    <Input type="textarea" id="description" name="description"
-                                                           value={description} onChange={this.onChange}/>
                                                 </FormGroup>
                                                 <FormGroup>
                                                     <Label for="state">State</Label>
@@ -252,29 +173,13 @@ class ProductEdit extends Component {
                                                     />
                                                 </FormGroup>
                                             </Colxx>
-                                            <Colxx xxs="12" xl="4" className="col-right">
-                                                {
-                                                    image != null ?
-                                                        <img src={`${productImagePath}/appview/${image}`}
-                                                             className="card-img-top"
-                                                             alt="Company Logo"/> : ""
-                                                }
-
-                                                <ImageUploader
-                                                    withPreview={true}
-                                                    key={image != null ? image : '1'}
-                                                    onChange={this.onDropImage}
-                                                    singleImage={true}
-                                                    buttonText="Choose Image"
-                                                />
-                                            </Colxx>
                                         </Row>
                                         <Button
                                             color="secondary"
                                             size="lg"
                                             outline
                                             className="mr-3"
-                                            onClick={() => this.props.history.push('/products/products')}
+                                            onClick={() => this.props.history.push('/products/categories')}
                                         >
                                             <IntlMessages id="pages.back"/>
                                         </Button>
@@ -310,4 +215,5 @@ export default injectIntl(
     connect(
         mapStateToProps,
         {}
-    )(ProductEdit));
+    )(CategoryEdit)
+);

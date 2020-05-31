@@ -63,7 +63,10 @@ class ListPageHeading extends Component {
       pageSizes,
       toggleModal,
       heading,
-      handleEditAction
+      handleEditAction,
+      handleActivate,
+      handleInactivate,
+      handleDelete
     } = this.props;
 
     const { displayOptionsIsOpen, dropdownSplitOpen } = this.state;
@@ -122,7 +125,13 @@ class ListPageHeading extends Component {
                         <IntlMessages id="pages.edit" />
                       </DropdownItem>
                   }
-                  <DropdownItem>
+                  <DropdownItem onClick={handleActivate}>
+                    <IntlMessages id="pages.activate" />
+                  </DropdownItem>
+                  <DropdownItem onClick={handleInactivate}>
+                    <IntlMessages id="pages.inactivate" />
+                  </DropdownItem>
+                  <DropdownItem onClick={handleDelete}>
                     <IntlMessages id="pages.delete" />
                   </DropdownItem>
                 </DropdownMenu>

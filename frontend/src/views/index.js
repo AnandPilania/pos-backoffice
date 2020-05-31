@@ -3,7 +3,7 @@ import { Redirect } from "react-router-dom";
 
 class Main extends Component {
   render() {
-    return <Redirect to="/my-site/menu-app-settings" />
+    return <Redirect to="/overview" />
   }
 }
 export default Main;

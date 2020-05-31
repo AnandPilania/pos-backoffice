@@ -19,8 +19,11 @@ const ViewMain = React.lazy(() =>
 const ViewAuth = React.lazy(() =>
     import(/* webpackChunkName: "views-app" */ './views/auth')
 );
-const ViewMySite = React.lazy(() =>
-    import(/* webpackChunkName: "views-app" */ './views/my-site')
+const ViewOverview = React.lazy(() =>
+    import(/* webpackChunkName: "views-app" */ './views/overview')
+);
+const ViewMyAccount = React.lazy(() =>
+    import(/* webpackChunkName: "views-app" */ './views/my-account')
 );
 const ViewProducts = React.lazy(() =>
     import(/* webpackChunkName: "views-app" */ './views/products')
@@ -84,29 +87,34 @@ class App extends Component {
                         <Suspense fallback={<div className="loading"/>}>
                             <Router>
                                 <Switch>
-                                    <AuthRoute
-                                        path="/products"
-                                        authUser={loginUser}
-                                        component={ViewProducts}
-                                    />
                                     <Route
                                         path="/auth"
                                         render={props => <ViewAuth {...props} />}
                                     />
                                     <AuthRoute
-                                        path="/my-site"
+                                        path="/overview"
                                         authUser={loginUser}
-                                        component={ViewMySite}
+                                        component={ViewOverview}
                                     />
                                     <AuthRoute
-                                        path="/people"
+                                        path="/my-account"
                                         authUser={loginUser}
-                                        component={ViewPeople}
+                                        component={ViewMyAccount}
+                                    />
+                                    <AuthRoute
+                                        path="/products"
+                                        authUser={loginUser}
+                                        component={ViewProducts}
                                     />
                                     <AuthRoute
                                         path="/reports"
                                         authUser={loginUser}
                                         component={ViewReports}
+                                    />
+                                    <AuthRoute
+                                        path="/people"
+                                        authUser={loginUser}
+                                        component={ViewPeople}
                                     />
                                     <Route
                                         path="/error"

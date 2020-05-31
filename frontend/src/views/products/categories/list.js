@@ -1,11 +1,11 @@
 import React, { Component, Fragment } from "react";
-import { Row } from "reactstrap";
-import axios from "axios";
-
-import { servicePath, tokenPrefix } from "../../../constants/defaultValues";
-
+import {Button, Modal, ModalBody, ModalFooter, ModalHeader, Row} from "reactstrap";
 import Pagination from "../../../containers/products/Pagination";
-import ContextMenuContainer from "../../../containers/products/ContextMenuContainer";
+import {
+    getCategoryList,
+    changeCategoriesState,
+    deleteCategories
+} from "../../../redux/actions";
 import ListPageHeading from "../../../containers/products/ListPageHeading";
 import AddNewModal from "../../../containers/categories/AddNewModal";
 import DataListView from "../../../containers/categories/CategoryListView";
@@ -14,7 +14,6 @@ import {connect} from "react-redux";
 function collect(props) {
     return { data: props.data };
 }
-const apiUrl = servicePath + "/categories/paging";
 
 class CategoryListPages extends Component {
     constructor(props) {
@@ -31,12 +30,6 @@ class CategoryListPages extends Component {
             ],
             pageSizes: [8, 12, 24],
 
-            categories: [
-                { label: "Cakes", value: "Cakes", key: 0 },
-                { label: "Cupcakes", value: "Cupcakes", key: 1 },
-                { label: "Desserts", value: "Desserts", key: 2 }
-            ],
-
             selectedOrderOption: { column: "", label: "Default" },
             dropdownSplitOpen: false,
             modalOpen: false,
@@ -46,7 +39,9 @@ class CategoryListPages extends Component {
             search: "",
             selectedItems: [],
             lastChecked: null,
-            isLoading: false
+            isLoading: false,
+
+            confirmModalOpen: false
         };
     }
 
@@ -73,6 +68,12 @@ class CategoryListPages extends Component {
     toggleModal = () => {
         this.setState({
             modalOpen: !this.state.modalOpen
+        });
+    };
+
+    toggleDeleteConfirmModal = () => {
+        this.setState({
+            confirmModalOpen: !this.state.confirmModalOpen
         });
     };
 
@@ -166,7 +167,7 @@ class CategoryListPages extends Component {
         return -1;
     }
     handleChangeSelectAll = isToggle => {
-        if (this.state.selectedItems.length >= this.state.items.length) {
+        if (this.state.selectedItems.length >= this.props.items.length) {
             if (isToggle) {
                 this.setState({
                     selectedItems: []
@@ -174,7 +175,7 @@ class CategoryListPages extends Component {
             }
         } else {
             this.setState({
-                selectedItems: this.state.items.map(x => x.id)
+                selectedItems: this.props.items.map(x => x.id)
             });
         }
         document.activeElement.blur();
@@ -194,67 +195,70 @@ class CategoryListPages extends Component {
             isLoading: false
         });
 
-        axios
-            .get(
-                `${apiUrl}?pageSize=${selectedPageSize}&currentPage=${currentPage}&orderBy=${
-                    selectedOrderOption.column
-                }&search=${search}`, {
-                    headers: {
-                        'X-API-TOKEN': tokenPrefix + this.props.apiToken
-                    }
-                }
-            )
-            .then(res => {
-                return res.data['data'];
-            })
-            .then(data => {
-                this.setState({
-                    totalPage: data.totalPage,
-                    items: data.data,
-                    selectedItems: [],
-                    totalItemCount: data.totalItem,
-                    isLoading: true
-                });
+        this.props.getCategoryList({
+            selectedPageSize,
+            currentPage,
+            selectedOrderOption,
+            search
+        }).then(res => {
+            this.setState({
+                selectedItems: [],
+                isLoading: true
             });
+        });
     }
-
-    onContextMenuClick = (e, data, target) => {
-        console.log(
-            "onContextMenuClick - selected items",
-            this.state.selectedItems
-        );
-        console.log("onContextMenuClick - action : ", data.action);
-    };
 
     handleEditAction = () => {
-
+        if (this.state.selectedItems.length === 1)
+            this.props.history.push(this.props.match.url + '/edit/' + this.state.selectedItems[0]);
     }
 
-    onContextMenu = (e, data) => {
-        const clickedProductId = data.data;
-        if (!this.state.selectedItems.includes(clickedProductId)) {
-            this.setState({
-                selectedItems: [clickedProductId]
-            });
-        }
+    handleActivate = () => {
+        if (this.state.selectedItems.length > 0)
+            this.props.changeCategoriesState(this.state.selectedItems, 1);
+    }
 
-        return true;
-    };
+    handleInactivate = () => {
+        if (this.state.selectedItems.length > 0)
+            this.props.changeCategoriesState(this.state.selectedItems, 0);
+    }
 
+    handleDelete = () => {
+        this.toggleDeleteConfirmModal();
+    }
+
+    handleDeleteSelectedCategory = (categoryId) => {
+        this.setState({
+            isLoading: false
+        });
+        this.props.deleteCategories([categoryId])
+            .then(res => res ? this.dataListRender() : {});
+    }
+
+    deleteCategory = () => {
+        this.toggleDeleteConfirmModal();
+        this.setState({
+            isLoading: false
+        });
+        this.props.deleteCategories(this.state.selectedItems)
+            .then(res => res ? this.dataListRender() : {});
+    }
     render() {
         const {
             currentPage,
-            items,
             selectedPageSize,
-            totalItemCount,
             selectedOrderOption,
             selectedItems,
             orderOptions,
             pageSizes,
             modalOpen,
-            categories
+            confirmModalOpen
         } = this.state;
-        const { match } = this.props;
+        const {
+            items,
+            totalItem: totalItemCount,
+            totalPage,
+            match } = this.props;
         const startIndex = (currentPage - 1) * selectedPageSize;
         const endIndex = currentPage * selectedPageSize;
 
@@ -279,40 +283,48 @@ class CategoryListPages extends Component {
                         pageSizes={pageSizes}
                         toggleModal={this.toggleModal}
                         handleEditAction={this.handleEditAction}
+                        handleActivate={this.handleActivate}
+                        handleInactivate={this.handleInactivate}
+                        handleDelete={this.handleDelete}
                     />
+                    <Modal isOpen={confirmModalOpen} toggle={this.toggleDeleteConfirmModal}>
+                        <ModalHeader toggle={this.toggleDeleteConfirmModal}>Delete Category</ModalHeader>
+                        <ModalBody>
+                            Are you sure you want to delete selected category(s)?
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button onClick={this.deleteCategory} size="lg" color="primary">Yes</Button>
+                            <Button onClick={this.toggleDeleteConfirmModal} size="lg" outline color="secondary">Cancel</Button>
+                        </ModalFooter>
+                    </Modal>
                     <AddNewModal
                         modalOpen={modalOpen}
                         dataListRender={this.dataListRender.bind(this)}
                         toggleModal={this.toggleModal}
-                        categories={categories}
                     />
                     {
                         !this.state.isLoading ? (
                             <div className="loading"/>
                         ) :
                         <Row>
-                            {items.map(product => {
+                            {items.map(category => {
 
                                 return (
                                     <DataListView
-                                        key={product.id}
-                                        product={product}
-                                        isSelect={this.state.selectedItems.includes(product.id)}
+                                        key={category.id}
+                                        product={category}
+                                        isSelect={this.state.selectedItems.includes(category.id)}
                                         onCheckItem={this.onCheckItem}
                                         collect={collect}
+                                        onDelete={this.handleDeleteSelectedCategory}
                                     />
                                 );
 
                             })}{" "}
                             <Pagination
                                 currentPage={this.state.currentPage}
-                                totalPage={this.state.totalPage}
+                                totalPage={totalPage}
                                 onChangePage={i => this.onChangePage(i)}
-                            />
-                            <ContextMenuContainer
-                                onContextMenuClick={this.onContextMenuClick}
-                                onContextMenu={this.onContextMenu}
-                                selectedItemsLength={selectedItems ? selectedItems.length : 0}
                             />
                         </Row>
                     }
@@ -322,13 +334,17 @@ class CategoryListPages extends Component {
     }
 }
 
-const mapStateToProps = ({ authUser }) => {
-    const { token: apiToken } = authUser;
-    return { apiToken };
+const mapStateToProps = ({ categories }) => {
+    const { items, totalItem, totalPage } = categories;
+    return { items, totalItem, totalPage };
 };
 
 export default connect(
     mapStateToProps,
-    {}
+    {
+        getCategoryList,
+        changeCategoriesState,
+        deleteCategories
+    }
 )(CategoryListPages);
 

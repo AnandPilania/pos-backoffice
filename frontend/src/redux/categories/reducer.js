@@ -1,11 +1,11 @@
 import {
-    LOAD_PRODUCT_SUCCESS,
-    LOAD_PRODUCT_FAIL,
-    TOGGLE_PRODUCT_STATE,
-    TOGGLE_PRODUCT_STATE_SUCCESS,
-    TOGGLE_PRODUCT_STATE_FAIL,
-    CHANGE_PRODUCTS_STATE_SUCCESS,
-    CHANGE_PRODUCTS_STATE_FAIL
+    LOAD_CATEGORY_SUCCESS,
+    LOAD_CATEGORY_FAIL,
+    TOGGLE_CATEGORY_STATE,
+    TOGGLE_CATEGORY_STATE_SUCCESS,
+    TOGGLE_CATEGORY_STATE_FAIL,
+    CHANGE_CATEGORIES_STATE_SUCCESS,
+    CHANGE_CATEGORIES_STATE_FAIL
 } from "../actions";
 
 const INIT_STATE = {
@@ -17,39 +17,39 @@ const INIT_STATE = {
 
 export default (state = INIT_STATE, action) => {
     switch (action.type) {
-        case LOAD_PRODUCT_SUCCESS:
+        case LOAD_CATEGORY_SUCCESS:
             return {
                 ...state,
                 items: action.payload.data,
                 totalItem: action.payload.totalItem,
                 totalPage: action.payload.totalPage
             };
-        case LOAD_PRODUCT_FAIL:
+        case LOAD_CATEGORY_FAIL:
             return {
                 ...state,
                 items: [],
                 totalItem: 0,
                 totalPage: 1
             };
-        case TOGGLE_PRODUCT_STATE:
+        case TOGGLE_CATEGORY_STATE:
             return {
                 ...state,
                 toggleItems: action.payload,
             };
-        case TOGGLE_PRODUCT_STATE_SUCCESS:
+        case TOGGLE_CATEGORY_STATE_SUCCESS:
             return {
                 ...state,
-                items: toggleProductState(state.items, action.payload),
+                items: toggleCategoryState(state.items, action.payload),
                 toggleItems: []
             };
-        case CHANGE_PRODUCTS_STATE_SUCCESS:
+        case CHANGE_CATEGORIES_STATE_SUCCESS:
             return {
                 ...state,
-                items: updateProductState(state.items, action.payload.productIds, action.payload.state),
+                items: updateCategoriesState(state.items, action.payload.categoryIds, action.payload.state),
                 toggleItems: []
             }
-        case TOGGLE_PRODUCT_STATE_FAIL:
-        case CHANGE_PRODUCTS_STATE_FAIL:
+        case TOGGLE_CATEGORY_STATE_FAIL:
+        case CHANGE_CATEGORIES_STATE_FAIL:
             return {
                 ...state,
                 toggleItems: []
@@ -59,21 +59,21 @@ export default (state = INIT_STATE, action) => {
     }
 }
 
-const toggleProductState = (products, productId) => {
-    return products.map(product => {
-        if (product['id'] !== productId) return product;
+const toggleCategoryState = (categories, categoryId) => {
+    return categories.map(category => {
+        if (category['id'] !== categoryId) return category;
         return {
-            ...product,
-            show_flag: 1 - product.show_flag
+            ...category,
+            show_flag: 1 - category.show_flag
         }
     });
 }
 
-const updateProductState = (products, productIds, state) => {
-    return products.map(product => {
-        if (productIds.indexOf(product['id']) < 0) return product;
+const updateCategoriesState = (categories, categoryIds, state) => {
+    return categories.map(category => {
+        if (categoryIds.indexOf(category['id']) < 0) return category;
         return {
-            ...product,
+            ...category,
             show_flag: state
         }
     });

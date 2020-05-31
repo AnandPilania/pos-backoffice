@@ -1,23 +1,26 @@
 import React, {Component, Fragment} from "react";
-import {Row} from "reactstrap";
+import {Row, Modal, ModalHeader, ModalBody, ModalFooter, Button} from "reactstrap";
 import axios from "axios";
 
 import {servicePath, tokenPrefix} from "../../../constants/defaultValues";
 
+import {
+    getProduct,
+    changeProductsState,
+    deleteProducts
+} from "../../../redux/actions";
 import Pagination from "../../../containers/products/Pagination";
-import ContextMenuContainer from "../../../containers/products/ContextMenuContainer";
 import ListPageHeading from "../../../containers/products/ListPageHeading";
 import ThumbListView from "../../../containers/products/ThumbListView";
 import AddNewModal from "../../../containers/products/AddNewModal";
 import ImageListView from "../../../containers/products/ImageListView";
 import DataListView from "../../../containers/products/DataListView";
 import {connect} from "react-redux";
+import {injectIntl} from "react-intl";
 
 function collect(props) {
     return {data: props.data};
 }
-
-const apiUrl = servicePath + "/products/paging";
 
 class ProductListPages extends Component {
     constructor(props) {
@@ -41,16 +44,17 @@ class ProductListPages extends Component {
             dropdownSplitOpen: false,
             modalOpen: false,
             currentPage: 1,
-            totalItemCount: 0,
-            totalPage: 1,
             search: "",
             selectedItems: [],
             lastChecked: null,
-            isLoading: false
+            isLoading: false,
+
+            confirmModalOpen: false
         };
     }
 
     componentDidMount() {
+
         this.dataListRender();
         this.getCategoryList();
         this.mouseTrap.bind(["ctrl+a", "command+a"], () =>
@@ -74,6 +78,12 @@ class ProductListPages extends Component {
     toggleModal = () => {
         this.setState({
             modalOpen: !this.state.modalOpen
+        });
+    };
+
+    toggleDeleteConfirmModal = () => {
+        this.setState({
+            confirmModalOpen: !this.state.confirmModalOpen
         });
     };
 
@@ -146,7 +156,7 @@ class ProductListPages extends Component {
         });
 
         if (event.shiftKey) {
-            var items = this.state.items;
+            var items = this.props.items;
             var start = this.getIndex(id, items, "id");
             var end = this.getIndex(this.state.lastChecked, items, "id");
             items = items.slice(Math.min(start, end), Math.max(start, end) + 1);
@@ -173,7 +183,7 @@ class ProductListPages extends Component {
     }
 
     handleChangeSelectAll = isToggle => {
-        if (this.state.selectedItems.length >= this.state.items.length) {
+        if (this.state.selectedItems.length >= this.props.items.length) {
             if (isToggle) {
                 this.setState({
                     selectedItems: []
@@ -181,7 +191,7 @@ class ProductListPages extends Component {
             }
         } else {
             this.setState({
-                selectedItems: this.state.items.map(x => x.id)
+                selectedItems: this.props.items.map(x => x.id)
             });
         }
         document.activeElement.blur();
@@ -201,28 +211,18 @@ class ProductListPages extends Component {
             isLoading: false
         });
 
-        axios
-            .get(
-                `${apiUrl}?pageSize=${selectedPageSize}&currentPage=${currentPage}&orderBy=${
-                    selectedOrderOption.column
-                }&search=${search}`, {
-                    headers: {
-                        'X-API-TOKEN': tokenPrefix + this.props.apiToken
-                    }
-                }
-            )
-            .then(res => {
-                return res.data['data'];
-            })
-            .then(data => {
-                this.setState({
-                    totalPage: data.totalPage,
-                    items: data.data,
-                    selectedItems: [],
-                    totalItemCount: data.totalItem,
-                    isLoading: true
-                });
+        this.props.getProduct({
+            selectedPageSize,
+            currentPage,
+            selectedOrderOption,
+            search
+        }).then(res => {
+            this.setState({
+                selectedItems: [],
+                isLoading: true
             });
+        });
+
     }
 
     getCategoryList = () => {
@@ -244,48 +244,61 @@ class ProductListPages extends Component {
             });
     }
 
-    onContextMenuClick = (e, data, target) => {
-        console.log(
-            "onContextMenuClick - selected items",
-            this.state.selectedItems
-        );
-        console.log("onContextMenuClick - action : ", data.action);
-        if (data.action === 'edit') {
-            this.props.history.push(this.props.match.url + '/edit/' + this.state.selectedItems[0]);
-        }
-    };
-
     handleEditAction = () => {
         if (this.state.selectedItems.length === 1)
             this.props.history.push(this.props.match.url + '/edit/' + this.state.selectedItems[0]);
     }
 
-    onContextMenu = (e, data) => {
-        const clickedProductId = data.data;
-        if (!this.state.selectedItems.includes(clickedProductId)) {
-            this.setState({
-                selectedItems: [clickedProductId]
-            });
-        }
+    handleActivate = () => {
+        if (this.state.selectedItems.length > 0)
+            this.props.changeProductsState(this.state.selectedItems, 1);
+    }
 
-        return true;
-    };
+    handleInactivate = () => {
+        if (this.state.selectedItems.length > 0)
+            this.props.changeProductsState(this.state.selectedItems, 0);
+    }
+
+    handleDelete = () => {
+        this.toggleDeleteConfirmModal();
+    }
+
+    handleDeleteSelectedProduct = (productId) => {
+        this.setState({
+            isLoading: false
+        });
+        this.props.deleteProducts([productId])
+            .then(res => res ? this.dataListRender() : {});
+    }
+
+    deleteProduct = () => {
+        this.toggleDeleteConfirmModal();
+        this.setState({
+            isLoading: false
+        });
+        this.props.deleteProducts(this.state.selectedItems)
+            .then(res => res ? this.dataListRender() : {});
+    }
 
     render() {
         const {
             currentPage,
-            items,
             displayMode,
             selectedPageSize,
-            totalItemCount,
             selectedOrderOption,
             selectedItems,
             orderOptions,
             pageSizes,
             modalOpen,
-            categories
+            categories,
+            confirmModalOpen
         } = this.state;
-        const {match} = this.props;
+        const {
+            items,
+            totalItem: totalItemCount,
+            totalPage,
+            match
+        } = this.props;
         const startIndex = (currentPage - 1) * selectedPageSize;
         const endIndex = currentPage * selectedPageSize;
 
@@ -313,7 +326,20 @@ class ProductListPages extends Component {
                         pageSizes={pageSizes}
                         toggleModal={this.toggleModal}
                         handleEditAction={this.handleEditAction}
+                        handleActivate={this.handleActivate}
+                        handleInactivate={this.handleInactivate}
+                        handleDelete={this.handleDelete}
                     />
+                    <Modal isOpen={confirmModalOpen} toggle={this.toggleDeleteConfirmModal}>
+                        <ModalHeader toggle={this.toggleDeleteConfirmModal}>Delete Product</ModalHeader>
+                        <ModalBody>
+                            Are you sure you want to delete selected product(s)?
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button onClick={this.deleteProduct} size="lg" color="primary">Yes</Button>
+                            <Button onClick={this.toggleDeleteConfirmModal} size="lg" outline color="secondary">Cancel</Button>
+                        </ModalFooter>
+                    </Modal>
                     <AddNewModal
                         toggleModal={this.toggleModal}
                         modalOpen={modalOpen}
@@ -326,7 +352,7 @@ class ProductListPages extends Component {
                                 <div className="loading"/>
                             ) :
                             <Row>
-                                {this.state.items.map(product => {
+                                {items.map(product => {
                                     if (this.state.displayMode === "imagelist") {
                                         return (
                                             <ImageListView
@@ -345,6 +371,7 @@ class ProductListPages extends Component {
                                                 isSelect={this.state.selectedItems.includes(product.id)}
                                                 collect={collect}
                                                 onCheckItem={this.onCheckItem}
+                                                onDelete={this.handleDeleteSelectedProduct}
                                             />
                                         );
                                     } else {
@@ -355,19 +382,15 @@ class ProductListPages extends Component {
                                                 isSelect={this.state.selectedItems.includes(product.id)}
                                                 onCheckItem={this.onCheckItem}
                                                 collect={collect}
+                                                onDelete={this.handleDeleteSelectedProduct}
                                             />
                                         );
                                     }
                                 })}{" "}
                                 <Pagination
                                     currentPage={this.state.currentPage}
-                                    totalPage={this.state.totalPage}
+                                    totalPage={totalPage}
                                     onChangePage={i => this.onChangePage(i)}
-                                />
-                                <ContextMenuContainer
-                                    onContextMenuClick={this.onContextMenuClick}
-                                    onContextMenu={this.onContextMenu}
-                                    selectedItemsLength={selectedItems ? selectedItems.length : 0}
                                 />
                             </Row>
                     }
@@ -377,13 +400,20 @@ class ProductListPages extends Component {
     }
 }
 
-const mapStateToProps = ({authUser}) => {
+const mapStateToProps = ({authUser, products}) => {
     const {token: apiToken} = authUser;
-    return {apiToken};
+    const {items, totalItem, totalPage} = products;
+    return {apiToken, items, totalItem, totalPage};
 };
 
-export default connect(
-    mapStateToProps,
-    {}
-)(ProductListPages);
+export default injectIntl(
+    connect(
+        mapStateToProps,
+        {
+            getProduct,
+            changeProductsState,
+            deleteProducts
+        }
+    )(ProductListPages)
+);
 

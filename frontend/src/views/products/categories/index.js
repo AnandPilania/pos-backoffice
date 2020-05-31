@@ -5,6 +5,11 @@ const CategoryList = React.lazy(() =>
     import(/* webpackChunkName: "start" */ './list')
 );
 
+const CategoryEdit = React.lazy(() =>
+    import(/* webpackChunkName: "start" */ './edit')
+);
+
+
 const Products = ({ match }) => (
     <Suspense fallback={<div className="loading" />}>
         <Switch>
@@ -13,6 +18,12 @@ const Products = ({ match }) => (
                 path={`${match.url}/`}
                 exact
                 render={props => <CategoryList {...props} />}
+            />
+            <Route
+                path={`${match.url}/edit/:categoryId`}
+                render={props => {
+                    return <CategoryEdit {...props} />
+                }}
             />
             <Redirect to="/error" />
         </Switch>

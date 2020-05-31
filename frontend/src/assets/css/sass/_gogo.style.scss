@@ -1419,6 +1419,71 @@ button {
   color: $dark-btn-background;
 }
 
+.badge-multiple-state {
+  width: 36px;
+  position: relative;
+  transition: opacity 500ms;
+
+  .spinner,
+  .icon {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    opacity: 0;
+    visibility: hidden;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: opacity 500ms;
+    color: $button-text-color;
+  }
+
+  .spinner {
+    width: 36px;
+    text-align: center;
+  }
+
+  .spinner > span {
+    width: 6px;
+    height: 6px;
+    background-color: $button-text-color;
+    border-radius: 100%;
+    display: inline-block;
+    -webkit-animation: sk-bouncedelay 1.2s infinite ease-in-out both;
+    animation: sk-bouncedelay 1.2s infinite ease-in-out both;
+  }
+
+  .spinner .bounce1 {
+    -webkit-animation-delay: -0.32s;
+    animation-delay: -0.32s;
+  }
+
+  .spinner .bounce2 {
+    -webkit-animation-delay: -0.16s;
+    animation-delay: -0.16s;
+  }
+
+  .icon i {
+    vertical-align: text-bottom;
+    font-size: 18px;
+  }
+
+  .label {
+    transition: opacity 500ms;
+  }
+
+  &.show-spinner {
+    .label {
+      opacity: 0;
+    }
+
+    .spinner {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+}
+
 /* 06.Breadcrumb */
 .breadcrumb-container {
   .breadcrumb {

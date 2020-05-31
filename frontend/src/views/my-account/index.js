@@ -4,11 +4,8 @@ import { connect } from 'react-redux';
 
 import AppLayout from '../../layout/AppLayout';
 
-const Dashboard = React.lazy(() =>
-  import(/* webpackChunkName: "viwes-gogo" */ './dashboard')
-);
 const SiteInformation = React.lazy(() =>
-    import(/* webpackChunkName: "viwes-second-menu" */ './site-info')
+    import(/* webpackChunkName: "viwes-second-menu" */ './profile')
 );
 const MenuAppSettings = React.lazy(() =>
     import(/* webpackChunkName: "viwes-second-menu" */ './menu-app')
@@ -24,13 +21,9 @@ class App extends Component {
         <div className="dashboard-wrapper">
           <Suspense fallback={<div className="loading" />}>
             <Switch>
-              <Redirect exact from={`${match.url}/`} to={`${match.url}/dashboard`} />
+              <Redirect exact from={`${match.url}/`} to={`${match.url}/profile`} />
               <Route
-                path={`${match.url}/dashboard`}
-                render={props => <Dashboard {...props} />}
-              />
-              <Route
-                path={`${match.url}/information`}
+                path={`${match.url}/profile`}
                 render={props => <SiteInformation {...props} />}
               />
               <Route

@@ -1,22 +1,28 @@
 const data = [
   {
+    id: "overview",
+    label: "menu.overview",
+    to: "/overview"
+  },
+  {
     id: "my-account",
     label: "menu.my-account",
-    to: "/my-site",
+    to: "/my-account",
     subs: [
       {
-        label: "menu.dashboard",
-        to: "/my-site/dashboard"
-      },
-      {
         label: "menu.profile",
-        to: "/my-site/information"
+        to: "/my-account/profile"
       },
       {
-        label: "menu.menu-app-settings",
-        to: "/my-site/menu-app-settings"
+        label: "menu.menu-design",
+        to: "/my-account/menu-app-settings"
       }
     ]
+  },
+  {
+    id: "reports",
+    label: "menu.reports",
+    to: "/reports"
   },
   {
     id: "products",
@@ -47,11 +53,6 @@ const data = [
         to: "/people/customers"
       }
     ]
-  },
-  {
-    id: "reports",
-    label: "menu.reports",
-    to: "/reports"
   }
 ];
 export default data;

@@ -100,7 +100,7 @@ class MenuAppSettings extends Component {
             <Fragment>
                 <Row>
                     <Colxx xxs="12">
-                        <Breadcrumb heading="menu.menu-app-settings" match={this.props.match}/>
+                        <Breadcrumb heading="menu.menu-design" match={this.props.match}/>
                         <Separator className="mb-5"/>
                     </Colxx>
                 </Row>

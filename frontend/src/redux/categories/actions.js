@@ -1,19 +1,19 @@
 import {
-    LOAD_PRODUCT_SUCCESS,
-    LOAD_PRODUCT_FAIL,
-    TOGGLE_PRODUCT_STATE,
-    TOGGLE_PRODUCT_STATE_SUCCESS,
-    TOGGLE_PRODUCT_STATE_FAIL,
-    CHANGE_PRODUCTS_STATE_SUCCESS,
-    CHANGE_PRODUCTS_STATE_FAIL
+    LOAD_CATEGORY_SUCCESS,
+    LOAD_CATEGORY_FAIL,
+    TOGGLE_CATEGORY_STATE,
+    TOGGLE_CATEGORY_STATE_SUCCESS,
+    TOGGLE_CATEGORY_STATE_FAIL,
+    CHANGE_CATEGORIES_STATE_SUCCESS,
+    CHANGE_CATEGORIES_STATE_FAIL
 } from "../actions";
 import axios from "axios";
 import {tokenPrefix, servicePath} from "../../constants/defaultValues";
 
-export const getProduct = (pageInfo) => async (dispatch, getState) => {
+export const getCategoryList = (pageInfo) => async (dispatch, getState) => {
     return axios
         .get(
-            `${servicePath}/products/paging`, {
+            `${servicePath}/categories/paging`, {
                 params: {
                     pageSize: pageInfo.selectedPageSize,
                     currentPage: pageInfo.currentPage,
@@ -28,27 +28,27 @@ export const getProduct = (pageInfo) => async (dispatch, getState) => {
         .then(res => res.data['data'])
         .then(data => {
             dispatch({
-                type: LOAD_PRODUCT_SUCCESS,
+                type: LOAD_CATEGORY_SUCCESS,
                 payload: data
             });
             return true;
         })
         .catch(error => {
             dispatch({
-                type: LOAD_PRODUCT_FAIL,
+                type: LOAD_CATEGORY_FAIL,
             });
             return false;
         });
 }
 
-export const toggleProductState = (productId) => (dispatch, getState) => {
+export const toggleCategoryState = (categoryId) => (dispatch, getState) => {
     dispatch({
-        type: TOGGLE_PRODUCT_STATE,
-        payload: [productId]
+        type: TOGGLE_CATEGORY_STATE,
+        payload: [categoryId]
     });
     axios
-        .post(servicePath + "/products/toggleActive", {
-            productId
+        .post(servicePath + "/categories/toggleActive", {
+            categoryId
         }, {
             headers: {
                 'X-API-TOKEN': tokenPrefix + getState().authUser.token
@@ -58,31 +58,31 @@ export const toggleProductState = (productId) => (dispatch, getState) => {
         .then(data => {
             if (data['message'] === "") {
                 dispatch({
-                    type: TOGGLE_PRODUCT_STATE_SUCCESS,
-                    payload: productId
+                    type: TOGGLE_CATEGORY_STATE_SUCCESS,
+                    payload: categoryId
                 });
             } else {
                 dispatch({
-                    type: TOGGLE_PRODUCT_STATE_FAIL
+                    type: TOGGLE_CATEGORY_STATE_FAIL
                 });
             }
 
         })
         .catch(error => {
             dispatch({
-                type: TOGGLE_PRODUCT_STATE_FAIL
+                type: TOGGLE_CATEGORY_STATE_FAIL
             });
         });
 }
 
-export const changeProductsState = (productIds, state) => (dispatch, getState) => {
+export const changeCategoriesState = (categoryIds, state) => (dispatch, getState) => {
     dispatch({
-        type: TOGGLE_PRODUCT_STATE,
-        payload: productIds
+        type: TOGGLE_CATEGORY_STATE,
+        payload: categoryIds
     });
     axios
-        .post(servicePath + "/products/changeState", {
-            productIds: JSON.stringify(productIds),
+        .post(servicePath + "/categories/changeState", {
+            categoryIds: JSON.stringify(categoryIds),
             state
         }, {
             headers: {
@@ -93,32 +93,32 @@ export const changeProductsState = (productIds, state) => (dispatch, getState) =
         .then(data => {
             if (data['message'] === "") {
                 dispatch({
-                    type: CHANGE_PRODUCTS_STATE_SUCCESS,
+                    type: CHANGE_CATEGORIES_STATE_SUCCESS,
                     payload: {
-                        productIds,
+                        categoryIds,
                         state
                     }
                 });
             } else {
                 dispatch({
-                    type: CHANGE_PRODUCTS_STATE_FAIL
+                    type: CHANGE_CATEGORIES_STATE_FAIL
                 });
             }
 
         })
         .catch(error => {
             dispatch({
-                type: CHANGE_PRODUCTS_STATE_FAIL
+                type: CHANGE_CATEGORIES_STATE_FAIL
             });
         });
 }
 
-export const deleteProducts = (productIds) => async (dispatch, getState) => {
+export const deleteCategories = (categoryIds) => async (dispatch, getState) => {
     return axios
         .delete(
-            `${servicePath}/products/delete`, {
+            `${servicePath}/categories/delete`, {
                 data: {
-                    productIds: JSON.stringify(productIds)
+                    categoryIds: JSON.stringify(categoryIds)
                 },
                 headers: {
                     'X-API-TOKEN': tokenPrefix + getState().authUser.token
