@@ -80,7 +80,7 @@ class ThumbListView extends Component {
                                     </p>
                                 </NavLink>
                                 <p className="mb-1 text-muted text-small w-15 w-sm-100">
-                                    {product.category.name}
+                                    {product.category !== null ? product.category.name : ''}
                                 </p>
                                 <p className="mb-1 text-muted text-small w-15 w-sm-100">
                                     {product.currency !== null ? (product.price + ' ' + product.currency.name) : ''}
