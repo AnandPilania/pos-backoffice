@@ -1,2 +1,3 @@
-# POS-backoffice
-POS (Django+React)
+# POS (Django+React)
+Admin Panel
+Back-Office
