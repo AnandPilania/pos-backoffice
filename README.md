@@ -1,6 +1,5 @@
-# POS System
-## Admin Panel + API (Laravel)
+# POS Back Office
 
-## Back-Office (ReactJS + Redux)
+React + Redux
 
-## Front Page
+
