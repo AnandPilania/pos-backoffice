@@ -1,3 +1,6 @@
-# POS (Django+React)
-Admin Panel
-Back-Office
+# POS System
+## Admin Panel + API (Laravel)
+
+## Back-Office (ReactJS + Redux)
+
+## Front Page
